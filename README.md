@@ -14,8 +14,20 @@ This version is being rewritten to work with TinyMCE 4.x, and is currently not v
 
 ## Requirements
 
-  * Rails >= 3.1
+  * Rails >= 3.2, < 9 (Rails 8 is supported)
   * TinyMCE4 using the advanced theme
+
+### Note on Ruby >= 3.2 and `tinymce-rails` 4.x
+
+  `File.exists?` was removed in Ruby 3.2, which Rails 8 requires. `tinymce-rails` 4.x releases before 4.9.11.1 still call it (when loading `config/tinymce.yml` and during the asset install after `assets:precompile`), so they fail with `NoMethodError: undefined method 'exists?' for class File`.
+
+  Either upgrade to `tinymce-rails` >= 4.9.11.1, or restore the alias in your app before `tinymce-rails` is loaded, e.g. at the top of `config/application.rb`:
+
+    class File
+      class << self
+        alias_method :exists?, :exist? unless respond_to?(:exists?)
+      end
+    end
 
 ## Setup
 
